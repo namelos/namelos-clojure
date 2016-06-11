@@ -32,25 +32,6 @@
 (defn drop [table]
   (drop-table (get-db-url) table))
 
-(defn drop-namelos []
-  (drop "namelos"))
-
-(def url (get-db-url))
-
-(drop "testing")
-
-(sql/db-do-commands url (sql/create-table-ddl :testing
-                                              [[:id :serial "PRIMARY KEY"]
-                                               [:title :text]
-                                               [:content :varchar]
-                                               [:created_at :timestamp
-                                                "NOT NULL" "DEFAULT CURRENT_TIMESTAMP"]]))
-
-(sql/insert! url :testing {:title "my first title"
-                           :content "my first content"})
-
-(sql/query url ["select * from testing"])
-
 ;;;;;;;;;;;;;;;
 ;; migration ;;
 ;;;;;;;;;;;;;;;
@@ -61,15 +42,12 @@
                        "where table_name='namelos'")])
       first :count pos?))
 
-
-
 (defn insert-sample []
-  (let [url (get-db-url)])
-  (sql/insert! url
+  (sql/insert! (get-db-url)
                :namelos {:title "my title" :content "my content"}))
 
 (defn insert-article [data]
-  (sql/insert! url :namelos data))
+  (sql/insert! (get-db-url) :namelos data))
 
 (defn migrate []
   (when (not (migrated?))
@@ -153,6 +131,6 @@
 (defn -main []
   (run-jetty #'app {:port (get-port) :join? false}))
 
-(def server (-main))
-(.stop server)
+;; (def server (-main))
+;; (.stop server)
 
