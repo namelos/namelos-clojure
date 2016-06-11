@@ -1,7 +1,7 @@
 (ns namelos.web
   (:require [compojure.core :refer [defroutes GET POST]]
-            [ring.adapter.jetty :refer [run-jetty]]
             [compojure.route :as route]
+            [ring.adapter.jetty :refer [run-jetty]]
             [ring.middleware.params :refer [wrap-params]]
             [ring.middleware.defaults :refer [wrap-defaults site-defaults]]
             [hiccup.core :refer [html]]
@@ -67,6 +67,9 @@
   (let [url (get-db-url)])
   (sql/insert! url
                :namelos {:title "my title" :content "my content"}))
+
+(defn insert-article [data]
+  (sql/insert! url :namelos data))
 
 (defn migrate []
   (when (not (migrated?))
@@ -135,13 +138,15 @@
 
 (defroutes routes
   (GET "/" []
-    (html (blog-list [{:title "title1" :content "content1"}
-                      {:title "title2" :content "content2"}
-                      {:title "title3" :content "content3"}])))
-  (GET "/new" [] index)
+    (html (blog-list (query))))
+  (GET "/new" [] (html (blog-form)))
   (POST "/new" {params :params}
+    (let [article
+          {:title (params "title")
+           :content (params "content")}]
+    (insert-article article)
     (layout "POST."
-            [:p (str "you have posted" params)])))
+            [:p (str "you have posted" params)]))))
 
 (def app (wrap-params #'routes))
 
