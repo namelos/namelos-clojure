@@ -85,16 +85,20 @@
 ;; views ;;
 ;;;;;;;;;;;
 
+(defn markdown-sample []
+  (str "# Hello world\n"
+       "this is a common paragraph\n"
+       "> and this is a quoted sentence\n"
+       "```\n"
+       "console.log('Hello')\n"
+       "```\n"))
+
 (defn blog-list [args]
   (map (fn [{:keys [title content]}]
          [:div
           [:h3 title]
           [:p content]])
        args))
-
-(first (blog-list [{:title "title1" :content "content1"}
-            {:title "title2" :content "content2"}
-            {:title "title3"}]))
 
 (defn blog-form []
   [:div
@@ -133,4 +137,3 @@
 
 ;; (def server (-main))
 ;; (.stop server)
-
